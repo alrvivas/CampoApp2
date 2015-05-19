@@ -1,0 +1,114 @@
+{% extends "base.html" %} 
+{% load static from staticfiles %}
+{% block header %}
+<div class="bodywhite">
+	{% for emp in empleado %}  	
+	  {% ifequal emp.departamento.nombre "Ventas" %}
+	    {% include "menucoco.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producción" %}
+	    {% include "menuproduccion.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Control de Calidad" %}
+	    {% include "menucc.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Dirección" %}
+	    {% include "menudir.html" %}
+	  {% endifequal %}
+	   {% ifequal emp.departamento.nombre "Producto T" %}
+	    {% include "menual.html" %}
+	  {% endifequal %}
+	{% empty%}
+	    No hay usuarios
+	{% endfor %}
+	<div class="container">	
+		<div class="row ">
+			<div class="col-xs-6  text-left">
+				<header class="text-capitalize activo">
+					<h1>{{ page_title }}</h1>
+				</header>
+			</div>
+			<div class="col-xs-6 text-right">
+				<header class="text-capitalize activo">
+					<h1><span class="glyphicon glyphicon-shopping-cart azul" aria-hidden="true"></span></h1>
+				</header>
+			</div>
+		</div>
+    	
+{% endblock %} 
+{% block contedor %}
+		<div class="row text-center botton">
+			
+			<div class="col-md-12 text-right  ">
+				<h3>Produccion Esperada total</h3>
+				<form class="form-inline" role="form" action=""  method="post" role="form">{% csrf_token %} 
+					<input type="hidden" name="categoria" id="categoria" value="{{c.pk}}" />
+					<div class="form-group">
+						<label for="exampleInputName2">Cantidad:</label>
+						<input type="number" class="form-control" id="cantidad" name="cantidad" />
+					</div>
+					<div class='input-group date' id='datetimepicker'>								
+						<input type="text" class="form-control" name="fecha_a_agendar" id="fecha_a_agendar"  placeholder="dd/mm/yyyy" required/>
+						<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+						</span>
+					</div>
+					<button type="submit" class="btn btn-default">Agendar</button>
+				</form>
+			</div>
+		</div>
+		<div class="row text-center">
+			{% for item in producto %}		
+				<div class="col-md-3 text-center botton ">	
+				    <div class="col-md-11 text-center  producto">
+					    <div class="titulo-producto">
+					    	<h3>{{item.name}}</h3>
+					    </div>	
+				    	<div >
+				    	{% for emp in empleado %}  	
+								{% ifequal emp.departamento.nombre "Ventas" %}
+				    				<a href="{{ item.get_absolute_urlsa }}"><img src="{{ item.imagen.url }}" class="img-responsive text-center" /></a>
+				    			{% else %}
+				    				<a href="{{ item.get_absolute_url }}"><img src="{{ item.imagen.url }}" class="img-responsive text-center" /></a>
+				    			{% endifequal %}
+				    			
+								
+							{% empty%}
+								No hay usuarios
+						{% endfor %}
+				    	</div >				    	            
+				    </div>			     
+				</div> 
+			{% empty %}
+				<p>Aun no agregas productos en {{ c.nombre }} :(</p>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+{% block scripts_adicionales %}
+<script type="text/javascript">	
+	    $(document).ready(function(){ 	
+			$(".producto").hover(function() {
+				$(this).find(".titulo-producto").hide();
+			},function(){
+				$(this).find(".titulo-producto").show();
+			});				
+		});
+    </script>
+<script type="text/javascript" src="{% static "js/moment.js" %}"></script>
+<script type="text/javascript"src="{% static "js/bootstrap-datetimepicker.js" %}"></script>
+<script type="text/javascript" src="{% static "js/es.js" %}"></script>
+<script>
+	$(function () {
+		var f = new Date();
+		$('#datetimepicker').datetimepicker({
+		    language: 'es',
+		    pickTime: false,
+		    defaultDate: (f.getDate() +1) + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+
+		});
+
+	});  
+</script>
+{% endblock %}  

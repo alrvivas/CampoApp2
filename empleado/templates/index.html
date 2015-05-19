@@ -1,0 +1,202 @@
+{% extends "base.html" %} 
+{% load static from staticfiles %}
+{% load mathfilters %}
+{% block header %}
+<div class="bodywhite">
+	{% for emp in empleado %}  	
+	  {% ifequal emp.departamento.nombre "Ventas" %}
+	    {% include "menucoco.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producción" %}
+	    {% include "menuproduccion.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Control de Calidad" %}
+	    {% include "menucc.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Dirección" %}
+	    {% include "menudir.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producto T" %}
+	    {% include "menual.html" %}
+	  {% endifequal %}
+
+	{% empty%}
+	    No hay usuarios
+	{% endfor %}
+    <div class="container">
+		<div class="row ">
+			<div class="col-xs-8 text-left">
+				<header class="text-capitalize activo">
+					<h1>{{page_title}}</h1>
+				</header>
+			</div>
+			<div class="col-xs-4 text-right">				
+				<h1><span class="glyphicon glyphicon-dashboard azul" aria-hidden="true"></span></h1>				
+			</div>
+		</div>
+{% endblock %} 
+{% block contedor %}
+		<div class="row text-center">					
+			{% for emp in empleado %}  	
+				{% ifequal emp.departamento.nombre "Dirección" %}
+				<div class="col-md-3 text-center botton ">
+					<form action="." method="GET" class="navbar-form navbar-left" role="search">  
+			            <div class="form-group col-xs-10">             
+			              <div class='input-group date' id='datetimepicker'> 
+			                <input type="text" name="q" value="{{ query|escape }}" class="form-control" placeholder="Buscar">
+			                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+			                </span>
+			              </div>
+
+			            </div> 
+			            <div class="col-xs-2">
+			              <button type="submit" class="btn backazul "><span class="glyphicon glyphicon-search blanco"></span></button>
+			            </div> 
+			            
+		          	</form>
+		        </div>
+				<div class="col-md-3 text-center botton " id="tsalidas">
+					<a href="{% url 'salidas' %}" ><h4>Salidas</h4>
+					{% for sa in salidas_k %}
+						<p class="salidask icontres text-center verde" style="display:none;">{{ sa.cantidad|mul:sa.producto.peso }}</p>
+					{% endfor %}
+					<p  class="rsalidas icontres text-center verde"><span>kg</span></p>
+					
+					</a>		    	
+				</div>
+				<div class="col-md-3 text-center botton ">
+					<h4>Devoluciones</h4>					
+					<div class="row text-center">
+					<h4>Buenas</h4>
+						<div class="col-md-12 text-center botton ">						
+							{% for db in devoluciones_kb %}
+								<p class="devolucion_bk icontres text-center azul" style="display:none;">{{ db.cantidad|mul:db.producto.peso }}</p>
+							{% endfor %}
+							<p  class="rdevolucion_b icontres text-center azul"></p>
+							
+							<p class="icontres text-center azul"><span id="porcentajes-ventas" class=" text-center azul"></span>%</p>
+						</div>
+					</div>
+					<div class="row text-center">
+					<h4>Reproceso</h4>
+						<div class="col-md-12 text-center botton ">
+							{% for dr in devoluciones_kr %}
+								<p class="devolucion_rk icontres text-center verde" style="display:none;">{{ dr.cantidad|mul:dr.producto.peso }}</p>
+							{% endfor %}
+							<p  class="rdevolucion_r icontres text-center verde"></p>
+							<p class="icontres text-center verde"><span id="porcentajes-r" class=" text-center verde"></span>%</p>
+						</div>
+					</div>
+					<div class="row text-center">
+					<h4>Malas</h4>
+						<div class="col-md-12 text-center botton ">
+							{% for dm in devoluciones_km %}
+								<p class="devolucion_mk icontres text-center rojo" style="display:none;">{{ dm.cantidad|mul:dm.producto.peso }}</p>
+							{% endfor %}
+							<p  class="rdevolucion_m icontres text-center rojo"></p>
+							<p class="icontres text-center rojo"><span id="porcentajes-m" class=" text-center rojo"></span>%</p>
+						</div>
+					</div>	
+				</div>
+				<div class="col-md-3 text-center botton ">
+					<h4>Ventas Netas</h4>
+					<p id="ventas-netas" class="icontres text-center azul"></p>
+				</div>
+			  	{% endifequal %}
+			{% empty%}
+			    No hay usuarios
+			{% endfor %}
+			
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	
+	$(function(){
+		var totals=0;            
+		$(".salidask").each(function(k,v){        
+		    totals=parseFloat(totals)+parseFloat($(this).text());
+		    $('.rsalidas').text(totals+"kg");
+		});	
+
+		var totaldb=0;            
+		$(".devolucion_bk").each(function(k,v){        
+		    totaldb=parseFloat(totaldb)+parseFloat($(this).text());
+		    $('.rdevolucion_b').text(totaldb+"kg");
+		});	
+		var totaldr=0;            
+		$(".devolucion_rk").each(function(k,v){        
+		    totaldr=parseFloat(totaldr)+parseFloat($(this).text());
+		    $('.rdevolucion_r').text(totaldr+"kg");
+		});	
+		var totaldm=0;            
+		$(".devolucion_mk").each(function(k,v){        
+		    totaldm=parseFloat(totaldm)+parseFloat($(this).text());
+		    $('.rdevolucion_m').text(totaldm+"kg");
+		});		
+	});
+
+
+</script>
+{% endblock %}
+{% block scripts_adicionales %}
+<script type="text/javascript"
+  src="{% static "js/moment.js" %}">
+</script>
+<script type="text/javascript"
+  src="{% static "js/bootstrap-datetimepicker.js" %}">
+</script>
+<script type="text/javascript"
+  src="{% static "js/es.js" %}">
+</script>
+<script>
+$(function () {
+    $('#datetimepicker').datetimepicker({
+        language: 'es',
+        pickTime: false,
+        format: 'YYYY-MM-DD'
+
+    });
+  
+});  
+
+</script>
+<script type="text/javascript"
+	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCFiqA2UgXb9FkqFkuLcck53NOx07w3ers&sensor=TRUE">
+</script>
+<script type="text/javascript"
+	src="{% static "js/ubicacion.js" %}">
+</script>
+<script type="text/javascript">
+	$( ".reload" ).click(function() {
+		setTimeout("location.reload(true);",1000);
+});
+</script>
+<script type="text/javascript">
+window.onload = function() {    
+    var salidas = $(".rsalidas").text();
+    var devoluciones = $(".rdevolucion_b").text();
+    var devolucionesr = $(".rdevolucion_r").text(); 
+    var devolucionesm = $(".rdevolucion_m").text();   
+	var ventas_netas = parseInt(salidas) - parseInt(devoluciones)-parseInt(devolucionesr)-parseInt(devolucionesm);
+	$("#ventas-netas").text(ventas_netas);
+	var potcentaje_dev = 0.0;
+	var potcentaje_devr = 0.0;
+	var potcentaje_devm = 0.0;
+
+	potcentaje_dev = ((parseFloat(devoluciones)/parseFloat(salidas))*100).toFixed(2) ;
+	potcentaje_devr = ((parseFloat(devolucionesr)/parseFloat(salidas))*100).toFixed(2) ;
+	potcentaje_devm = ((parseFloat(devolucionesm)/parseFloat(salidas))*100).toFixed(2) ;
+	if isNaN(potcentaje_dev){
+		$("#porcentajes-ventas").text(0.0);
+	}else{
+		$("#porcentajes-ventas").text(potcentaje_dev);
+	}	
+	$("#porcentajes-r").text(potcentaje_devr);
+	$("#porcentajes-m").text(potcentaje_devm);
+	
+	
+};
+</script>
+
+{% endblock %}  

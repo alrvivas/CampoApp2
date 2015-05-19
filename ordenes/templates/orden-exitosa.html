@@ -1,0 +1,131 @@
+{% extends "base.html" %} 
+{% load static from staticfiles %}
+{% load mathfilters %}
+{% block estaticos %}
+	<style type="text/css">
+	@media print {
+		h1{
+			font-size: 12px !important;
+		}	    
+	    p {
+	        font-size: 6px !important;
+	    }
+	}
+	</style>
+{% endblock %} 
+{% block header %}
+<div class="bodywhite ">
+	{% for emp in empleado %}  	
+	  {% ifequal emp.departamento.nombre "Ventas" %}
+	    {% include "menucoco.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producción" %}
+	    {% include "menuproduccion.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Control de Calidad" %}
+	    {% include "menucc.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Dirección" %}
+	    {% include "menudir.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producto T" %}
+	    {% include "menual.html" %}
+	  {% endifequal %}
+
+	{% empty%}
+	    No hay usuarios
+	{% endfor %}
+	<div class="container ">	
+		<div class="row ">
+			<div class="col-xs-9 text-left">
+				<header class="text-capitalize activo">
+					<div class="page-header">
+						<h1>Orden:{{orden.id}}-{{ orden.cliente }}</h1>
+					</div>
+				</header>
+			</div>
+			<div class="col-xs-3 text-right">
+				<header class="text-capitalize activo">
+
+					<h1><span class="glyphicon glyphicon-shopping-cart azul" aria-hidden="true"></span></h1>
+				</header>
+			</div>
+		</div>
+    	
+{% endblock %} 
+{% block contedor %}
+		
+		<div class="row text-center">
+				<div class="col-md-12 text-left table-responsive "> 
+			        <table  class="table table-striped">
+			        <thead>
+					<tr>
+						<th >Producto</th>
+						<th >Cantidad</th> 
+						<th >Subtotal $</th> 
+						<th >Subtotal Kg</th> 						
+					</tr>
+			        </thead>			        
+			        <tbody>
+			        	
+			          	{%for item in productos %}
+			          		{% if item.cantidad > 0 %}
+				          		<tr>
+					            	<td class="text-capitalize">
+					              		{{ item.producto }}
+					            	</td>
+						            <td>
+						            	{{ item.cantidad }} 
+						            </td>
+						            <td>
+						            	${{ item.linea_subtotal }} 
+						            </td>
+					            	<td>
+						            	{{ item.linea_subtotalpeso }} kg 
+						            </td>
+					            </tr>
+				        	{% endif %}				            
+						{% endfor %}         
+			            	<tr>
+				            	<td >
+				            	</td>
+					            <td>
+					            	Totales:
+					            </td>
+					            <td>
+					            	${{ orden.orden_total }} 
+					            </td>
+				            	<td>
+					            	{{ orden.orden_totalpeso }} kg 
+					            </td>
+				            </tr>	
+			          				            
+			        </tbody>
+			        </table>
+				</div>
+				<div class="row text-center">
+			      	<div class="col-md-1 col-md-offset-10 col-xs-1 text-right "> 
+			        	<div class="form-group" >         
+			          		<button class=" btn backazul blanco btnprint " value="Next" >
+			            		<span class="glyphicon glyphicon-print blanco"></span>
+			         		 </button>			         		 
+			        	</div>
+			      	</div>		
+			    </div>	 
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+{% block scripts_adicionales %}
+ 
+
+<script>
+ $(document).ready(function(){
+        $(".btnprint").click(function(){
+        	window.print();
+        });
+    });
+</script>
+
+{% endblock %}  

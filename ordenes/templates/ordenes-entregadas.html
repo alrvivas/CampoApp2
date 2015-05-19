@@ -1,0 +1,110 @@
+{% extends "base.html" %} 
+{% load static from staticfiles %}
+{% block estaticos %}
+	<style type="text/css">
+	@media print {
+		h1{
+			font-size: 2px !important;
+		}	    
+	    p {
+	        font-size: 4px !important;
+	        color: blue !important;
+	    }
+	}
+	</style>
+{% endblock %} 
+{% block header %}
+<div class="bodywhite">
+	{% for emp in empleado %}  	
+	  {% ifequal emp.departamento.nombre "Ventas" %}
+	    {% include "menucoco.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producción" %}
+	    {% include "menuproduccion.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Control de Calidad" %}
+	    {% include "menucc.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Dirección" %}
+	    {% include "menudir.html" %}
+	  {% endifequal %}
+	   {% ifequal emp.departamento.nombre "Producto T" %}
+	    {% include "menual.html" %}
+	  {% endifequal %}
+	{% empty%}
+	    No hay usuarios
+	{% endfor %}
+	<div class="container">	
+		<div class="row ">
+			<div class="col-xs-9 text-left">
+				<header class="text-capitalize activo">
+					<div class="page-header">
+						<h1>{{ page_title }}</h1>
+					</div>
+				</header>
+			</div>
+			<div class="col-xs-3 text-right">
+				<header class="text-capitalize activo">
+					<h1><span class="glyphicon glyphicon-thumbs-up azul" aria-hidden="true"></span></h1>
+				</header>
+			</div>
+		</div>
+    	
+{% endblock %} 
+{% block contedor %}
+		
+		<div class="row text-center">
+				<div class="col-md-12 text-left table-responsive "> 
+			        <table  class="table table-striped">
+			        <thead>
+					<tr>
+						<th >Orden</th>
+						<th >Cliente</th>           
+						<th >Total KG</th>
+						
+					</tr>
+			        </thead>			        
+			        <tbody>
+			        	
+			          	{%for item in ordenes %}
+			          	{% ifequal item.status.nombre "Entregado" %}
+			          		<tr>
+				            	<td class="text-capitalize">
+				              		<p><a href="{{ item.get_absolute_urle }}">{{ item }}</a></p>
+				            	</td>
+					            <td>
+					            	<p>{{ item.cliente.nombre }} </p>
+					            </td>
+				            
+				            	<td>
+				            		<p>{{ item.orden_totalpeso }}</p>
+				            	</td>
+				            </tr>
+				        {% endifequal %}				            
+						{% endfor %}         
+			            
+			          				            
+			        </tbody>
+			        </table>				
+				</div>
+				 
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+{% block scripts_adicionales %}
+
+
+<script type="text/javascript"
+  src="{% static "js/print.js" %}">
+</script>
+<script>
+ $(document).ready(function(){
+        $(".btnprint").click(function(){
+          $( ".areaprint" ).printArea();
+        });
+    });
+</script>
+
+{% endblock %}  

@@ -1,0 +1,114 @@
+{% extends "base.html" %} 
+{% load static from staticfiles %}
+{% block header %}
+<div class="bodywhite">
+	{% for emp in empleado %}  	
+	  {% ifequal emp.departamento.nombre "Ventas" %}
+	    {% include "menucoco.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producción" %}
+	    {% include "menuproduccion.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Control de Calidad" %}
+	    {% include "menucc.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Dirección" %}
+	    {% include "menudir.html" %}
+	  {% endifequal %}
+	   {% ifequal emp.departamento.nombre "Producto T" %}
+	    {% include "menual.html" %}
+	  {% endifequal %}
+	{% empty%}
+	    No hay usuarios
+	{% endfor %}
+	<div class="container">	
+		<div class="row ">
+			<div class="col-xs-9 text-left">
+				<header class="text-capitalize activo">
+					<div class="page-header">
+						<h1>{{ page_title }}</h1>
+					</div>
+				</header>
+			</div>
+			<div class="col-xs-3 text-right">
+				<header class="text-capitalize activo">
+					<h1><span class="glyphicon glyphicon-thumbs-down rojo" aria-hidden="true"></span></h1>
+				</header>
+			</div>
+		</div>
+    	
+{% endblock %} 
+{% block contedor %}
+		<div class="row text-center">
+				<div class="col-md-3 text-center botton thumbnail">	
+					<img src="{{ p.imagen.url }}" class="img-responsive text-center" />				    		     
+				</div> 
+				<div class="col-md-3 text-left botton ">
+					<ul class="list-unstyled">
+						<li><b>Nombre:</b> {{devolucion_m.producto.name}}</li>
+						<li><b>Cantidad:</b> {{devolucion_m.cantidad}}</li>
+						<li><b>Fecha de Entrada:</b>{{devolucion_m.fecha_de_salida}}</li>
+						
+					</ul>
+				</div>
+				<div class="col-md-3  col-md-offset-3 text-left">	
+				<h3>Devolución Mala</h3>
+				<form role="form" action="."  method="post" role="form" >{% csrf_token %} 
+						
+						<input class="form-control" type="hidden" name="producto" id="id_producto" value="{{devolucion_m.producto.pk}}">
+						<div class="form-group">
+							<label for="id_cantidad">Cantidad:</label>
+							<input class="form-control" type="number" name="cantidad" id="id_cantidad" value="{{ devolucion_m.cantidad }}">
+						</div>
+						<input type="hidden" class="form-control" name="fecha_de_salida" id="fecha_de_salida"  
+						value="{{ devolucion_m.fecha_de_salida|date:"d/m/Y" }}" required/>
+						<input type="hidden" name="stock" id="id_stock" value="">				
+						
+						<button type="submit" id="comment-button" class="btn principal-btn" name="_save">Guardar</button>
+					</form>
+					<input type="hidden" name="stock1" id="stock" value="{{devolucion_m.producto.stock}}">
+					
+											    		     
+				</div> 
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+{% block scripts_adicionales %}
+
+<script type="text/javascript"
+  src="{% static "js/moment.js" %}">
+</script>
+<script type="text/javascript"
+  src="{% static "js/bootstrap-datetimepicker.js" %}">
+</script>
+<script type="text/javascript"
+  src="{% static "js/es.js" %}">
+</script>
+<script>
+$(function () {
+	var f = new Date();
+    $('#datetimepicker').datetimepicker({
+        language: 'es',
+        pickTime: false,
+        defaultDate: f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()
+
+    });
+    var cantidadini = $("#id_cantidad").val();
+   $('#id_cantidad').change(function(){
+		var cantidad = 0;
+		var stock = $("#stock").val();
+		cantidad = $("#id_cantidad").val();
+
+		if(cantidad < cantidadini){
+			$("#id_stock").val(parseInt(stock)+parseInt(cantidadini - cantidad)); 
+		}else{
+			$("#id_stock").val(parseInt(stock)-parseInt(cantidad - cantidadini)); 
+		}
+	});
+});  
+</script>
+
+
+{% endblock %}  

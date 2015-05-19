@@ -1,0 +1,218 @@
+{% extends "base.html" %} 
+{% load static from staticfiles %}
+{% load mathfilters %}
+{% block estaticos %}
+	<style type="text/css">
+	.trorden{
+	}
+	@media print {
+		h1{
+			font-size: 12px !important;
+		}	    
+	    p {
+	        font-size: 6px !important;
+	    }
+	}
+	</style>
+{% endblock %} 
+{% block header %}
+<div class="bodywhite">
+	{% for emp in empleado %}  	
+	  {% ifequal emp.departamento.nombre "Ventas" %}
+	    {% include "menucoco.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Producción" %}
+	    {% include "menuproduccion.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Control de Calidad" %}
+	    {% include "menucc.html" %}
+	  {% endifequal %}
+	  {% ifequal emp.departamento.nombre "Dirección" %}
+	    {% include "menudir.html" %}
+	  {% endifequal %}
+	   {% ifequal emp.departamento.nombre "Producto T" %}
+	    {% include "menual.html" %}
+	  {% endifequal %}
+	{% empty%}
+	    No hay usuarios
+	{% endfor %}
+	<div class="container areaprint">	
+		<div class="row ">
+			<div class="col-xs-9 text-left">
+				<header class="text-capitalize activo">
+					<div class="page-header">
+						<h1>Orden: {{ orden.id }}-{{orden.cliente.nombre}}</h1>
+					</div>
+				</header>
+			</div>
+			<div class="col-xs-3 text-right">
+				<header class="text-capitalize activo">
+					<h1><span class="glyphicon glyphicon-shopping-cart azul" aria-hidden="true"></span></h1>
+				</header>
+			</div>
+		</div>
+    	
+{% endblock %} 
+{% block contedor %}		
+		<div class="row text-center">
+				<div class="col-md-12 text-left table-responsive "> 
+			        <table  class="table table-striped">
+			        <thead>
+					<tr>
+						<th >Producto</th>
+						<th >Cantidad</th> 
+						<th >Subtotal Kg</th> 
+						
+					</tr>
+			        </thead>			        
+			        <tbody>
+			        	
+			          	{%for item in productoso %}
+			          	{% if item.cantidad > 0 %}
+			          		<tr>
+				            	<td class="text-capitalize">
+				              		{{ item.producto }}
+				            	</td>
+					            <td>
+					            	{{ item.cantidad }} 
+					            </td>
+					            <td>
+					            	{{ item.linea_subtotalpeso }} 
+					            </td>
+				            
+				            </tr>
+				        {% endif %}				            
+						{% endfor %}         
+			            
+			          				            
+			        </tbody>
+			        </table>
+				</div>
+				<div class="row text-center">
+			      	<div class="col-md-1 col-md-offset-10 col-xs-1 text-right "> 
+			        	<div class="form-group" >         
+			          		<button class=" btn backazul blanco btnprint " value="Next" >
+			            		<span class="glyphicon glyphicon-print blanco"></span>
+			         		 </button>			         		 
+			        	</div>
+			      	</div>
+			      	<div class="col-md-1  col-xs-1 text-right "> 
+		        		<form role="form" action=""  method="post" role="form" >{% csrf_token %}
+		        			{{ formset.management_form }}
+		        				
+		        			{% for f in formset  %}
+		        			<div class="trorden">
+		        				{%for p in productoso %}			        				
+			        				{% ifequal f.id.value p.producto.id %}
+				        				{{f.id}}
+				        				{{ f.id.errors }}
+				        				{{f.name}}
+				        				{{ f.name.errors }}
+				        				{{f.slug}}
+				        				{{ f.slig.errors }}
+				        				{{f.active}}
+				        				{{ f.active.errors }}
+				        				{{f.categoria}}
+				        				{{ f.categoria.errors }}
+				        				{{f.orden}}
+				        				{{ f.orden.errors }}
+				        					<input type="number" class="stock" name="stock" value="{{f.stock.value|sub:p.cantidad}}" />
+				        				{{ f.stock.errors }}
+				        				{{f.unit_price}}
+				        				{{ f.unit_price.errors }}
+				        				{{f.precio_a}}
+				        				{{ f.precio_a.errors }}
+				        				{{f.precio_b}}
+				        				{{ f.precio_b.errors }}
+				        				{{f.precio_c}}
+				        				{{ f.precio_c.errors }}
+				        				{{f.peso}}
+				        				{{ f.peso.errors }}
+				        				{{f.imagen}}
+				        				{{ f.imagen.errors }}
+			        				{% endifequal %}			        				
+			        			{% endfor %}
+			        			</div>	
+		        			{% endfor %}	
+		        			        			
+		                	<input class="form-control" type="hidden" name="id" id="id_id" value="{{orden.pk}}" >
+		        			<select name="status">
+		        			{%for o in status %} 		        				
+		        				<option value="{{o.id}}">{{o.nombre}}</option>        				
+		         		 	{% endfor %}
+		         		 	</select>
+		         		 	{{ o.nombre.errors }}
+		                	<input class="form-control" type="hidden" name="empleado" id="id_empleado" value="{{orden.empleado.id}}" >{{ o.empleado.errors }}
+							<input class="form-control" type="hidden" name="cliente" id="id_cliente" value="{{orden.cliente.id}}" >	{{ o.cliente.errors }}
+								
+							<input class="col-md-2 col-xs-2 text-right total" name="orden_total" id="total" type="hidden" value="{{orden.orden_total}}" />{{ o.orden_total.errors }}
+							<input class="col-md-2 col-xs-2 text-right totalkg" name="orden_totalpeso" id="totalkg" type="hidden" readonly value="{{orden.orden_totalpeso}}" />
+		         		 	<div class="form-group" >{{ o.orden_totalpeso.errors }}
+		         		 	<button class=" btn backazul blanco" value="Next" >
+		            			Entrgar
+		         		 	</button>
+		         		 	</div>
+		         		 </form>
+			      	</div>
+			    </div>
+				 
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+{% block scripts_adicionales %}
+<script>
+ $(document).ready(function(){
+        $(".btnprint").click(function(){
+        	window.print();
+        });
+    });
+</script>
+
+<script>
+$(function () {   
+	$("div.trorden").each(function(i) {
+		$(this).find('.id').attr('name', 'form-' + i +'-id');	  	
+		$(this).find('.name').attr('name', 'form-' + i +'-name');
+		$(this).find('.slug').attr('name', 'form-' + i +'-slug');
+		$(this).find('.categoria').attr('name', 'form-' + i +'-categoria');
+		$(this).find('.orden').attr('name', 'form-' + i +'-orden');
+		$(this).find('.active').attr('name', 'form-' + i +'-active');
+		$(this).find('.stock').attr('name', 'form-' + i +'-stock');
+		$(this).find('.unit_price').attr('name', 'form-' + i +'-unit_price');
+		$(this).find('.precio_a').attr('name', 'form-' + i +'-precio_a');
+		$(this).find('.precio_b').attr('name', 'form-' + i +'-precio_b');
+		$(this).find('.precio_c').attr('name', 'form-' + i +'-precio_c');
+		$(this).find('.peso').attr('name', 'form-' + i +'-peso');
+		$(this).find('.imagen').attr('name', 'form-' + i +'-imagen');
+
+
+	});
+
+	$("div.trorden").bind('keyup mouseup', function () {
+	   /*alert("changed");   */             
+	    $(this).find("#subtotal").val(parseFloat($(this).find("#cantidad").val()*$(this).find("#precio").val()).toFixed(2)); 
+	    $(this).find("#subtotalkg").val(parseFloat($(this).find("#cantidad").val()*$(this).find("#peso").val()).toFixed(3)); 
+	    $('.suminputs').each(function(){
+				var total = 0.0;
+				$(this).find('.stotalkg').each(function(){
+					total = parseFloat(total)+parseFloat($(this).val(),2); //<==== a catch  in here !! read below
+				});
+				$(".totalkg").val(parseFloat(total).toFixed(3));
+			});
+	    $('.suminputs').each(function(){
+				var totalp = 0.0;
+				$(this).find('.stotalp').each(function(){
+					totalp = parseFloat(totalp)+parseFloat($(this).val(),2); //<==== a catch  in here !! read below
+				});
+				$(".total").val(parseFloat(totalp).toFixed(2));
+			
+		}); 
+	 	
+	});
+
+});    
+</script>
+
+{% endblock %}  
